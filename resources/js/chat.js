@@ -1,8 +1,10 @@
 const form = document.querySelector(".chat-area .typing-area"),
-btnSend = form.querySelector("button"),
-message = form.querySelector("input[name='message']"),
-incoming = form.querySelector("input[name='incoming']"),
-chatBox = document.querySelector(".chat-area .chat-box");
+    btnSend = form.querySelector("button"),
+    message = form.querySelector("input[name='message']"),
+    textarea = form.querySelector(".textarea-message"),
+    incoming = form.querySelector("input[name='incoming']"),
+    chatBox = document.querySelector(".chat-area .chat-box"),
+    statusUser = document.querySelector(".chat-area .details p");
 
 const token = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -10,8 +12,26 @@ message.onkeypress = (event) => {
     return event.keyCode != 13 || event.shiftKey == false;
 }
 
+function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+chatBox.onmouseenter = () => {
+    chatBox.classList.add("active");
+}
+
+chatBox.onmouseleave = () => {
+    chatBox.classList.remove("active");
+}
+
 btnSend.onclick = (e) => {
     e.preventDefault();
+
+    message.value = textarea.value;
+
+    if (message.value == "") {
+        return;
+    }
 
     let url = form.action;
     let data = new FormData(form);
@@ -41,8 +61,17 @@ function callAPICallback(response, isSearch) {
         let data = response.response;
         let html = "";
         if (data.status) {
+
+            html = `<div class="chat outgoing">
+                    <div class="details">
+                        <p>` + message.value + `</p>
+                    </div>
+                </div>`;
             message.value = "";
-            console.log(data.message);
+            textarea.value = "";
+            chatBox.innerHTML += html;
+            scrollToBottom();
+
 
         } else {
 
@@ -58,12 +87,15 @@ function getChatCallback(response, isSearch) {
         let html = "";
         if (res.status) {
             const user = res.user;
+
+            statusUser.innerHTML = user.status == "1" ? "Active now" : "Offline";
+
             for (let index = 0; index < res.data.length; index++) {
 
                 // console.log("A: " + res.data[index]);
-               if(res.data[index]['incoming_id'] == incoming.value) {
-                    
-                html += `<div class="chat outgoing">
+                if (res.data[index]['incoming_id'] == incoming.value) {
+
+                    html += `<div class="chat outgoing">
                     <div class="details">
                         <p>` + res.data[index]['message'] + `</p>
                     </div>
@@ -76,29 +108,29 @@ function getChatCallback(response, isSearch) {
                     </div>
                 </div>`;
                 }
-                
+
             }
 
             chatBox.innerHTML = html;
+
+            if(!chatBox.classList.contains("active")) {
+                scrollToBottom();
+            }
 
         } else {
 
             chatBox.innerHTML = html;
         }
+        
         console.log(response);
     }
 }
 
-let isFirst = true;
-
-window.scrollTo(0, 500);
+let count = 0;
+let time = 3000;
 
 setInterval(() => {
     let data = "";
     callAPI("/get-chat/" + incoming.value, "GET", token, data, getChatCallback);
-    if(isFirst == true) {
-        window.scrollTo(0, 1000);
-        // window.scrollTo(0,chatBox.scrollHeight);
-        isFirst = false;
-    }
-}, 500);
+}, time);
+

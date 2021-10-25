@@ -50,6 +50,7 @@ class UserController extends Controller
         } else {
             $this->data = $this->user->with('getMessageReceiver', 'getMessageSender')->where('id', '!=', auth()->id())->get();
 
+            // dd($this->data);
             if ($this->data->isEmpty()) {
                 return response()->json([
                     'status' => false,

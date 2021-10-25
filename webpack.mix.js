@@ -24,4 +24,4 @@ mix.js('resources/js/login.js', 'public/js');
 mix.js('resources/js/chat.js', 'public/js');
 
 mix.css('resources/css/style.css', 'public/css');
-mix.browserSync('messenger.test');
+// mix.browserSync('messenger.test');

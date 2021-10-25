@@ -25,10 +25,13 @@ searchBar.onkeyup = () => {
     callAPI("/search", "POST", token, data, isSearch = true);
 }
 
+let time = 500;
+
 setInterval(() => {
     let data = "";
     callAPI("/search", "POST", token, data);
-}, 500);
+    time = 3000;
+}, time);
 
 
 function callAPI(url, method, token, data, isSearch = false) {
@@ -61,12 +64,15 @@ function callAPICallback(response, isSearch) {
                 let msgSender = item.get_message_sender;
                 let msg = "";
 
-                if(msgReceiver != null && msgSender != null) {
+                // alert(msgReceiver.length);
+                // console.log(msgSender.length);
+
+                if(msgReceiver.length != 0 && msgSender.length != 0) {
                     msg = msgReceiver.at(-1).id < msgSender.at(-1).id ? msgSender.at(-1).message : msgReceiver.at(-1).message;
                 } else {
-                    if(msgReceiver != null) {
+                    if(msgReceiver.length != 0) {
                         msg = msgReceiver.at(-1).message;
-                    } else if(msgSender != null) {
+                    } else if(msgSender.length != 0) {
                         msg = msgSender.at(-1).message;
                     }
                 }
@@ -79,7 +85,7 @@ function callAPICallback(response, isSearch) {
                         <p>` + msg + `</p>
                     </div>
                 </div>
-                <div class="status-dot ` + (item.status == 0 ? "offline" : "") + `"><i class="fas fa-circle"></i></div>
+                <div class="status-dot ` + (item.status == "2" ? "offline" : "") + `"><i class="fas fa-circle"></i></div>
             </a>`;
             });
 

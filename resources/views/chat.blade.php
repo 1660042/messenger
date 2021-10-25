@@ -14,7 +14,8 @@
     </div>
     <form action="{{ route('users.send-chat', $data->id) }}" class="typing-area">
         <input type="hidden" name="incoming" value="{{ $data->id }}">
-        <input type="text" name="message" placeholder="Type a message here...">
+        <input type="hidden" name="message" placeholder="Type a message here...">
+        <textarea name="" class="textarea-message" rows="1" placeholder="Type a message here..."></textarea>
         <button><i class="fab fa-telegram-plane"></i></button>
     </form>
 </section>
